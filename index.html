@@ -5222,15 +5222,250 @@ setTimeout(()=>document.getElementById('guidance').classList.add('visible'),2600
 </body>
 </html>
 "></iframe>
+<a id="ss-repo" href="https://github.com/banhangsim/safety-space" target="_blank" rel="noopener" style="position:fixed;right:104px;bottom:36px;z-index:999;font-family:'Inter',system-ui,monospace;font-size:10px;font-weight:600;letter-spacing:0.14em;color:#7A7972;text-decoration:none;user-select:none;padding:6px 11px;border:1px solid #2A2A28;background:rgba(6,7,11,0.74);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)">GITHUB ↗</a>
+<div id="ss-lang" style="position:fixed;right:18px;bottom:36px;z-index:999;font-family:'Inter',system-ui,monospace;font-size:10px;font-weight:600;letter-spacing:0.14em;color:#7A7972;cursor:pointer;user-select:none;padding:6px 11px;border:1px solid #2A2A28;background:rgba(6,7,11,0.74);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)">KO · EN</div>
 <script>
   var frames = { title:document.getElementById('f-title'), worker:document.getElementById('f-worker'),
     supervisor:document.getElementById('f-supervisor'), director:document.getElementById('f-director'),
     stacks:document.getElementById('f-stacks'), catalog:document.getElementById('f-catalog') };
-  function show(which){ var t=frames[which]; if(!t) return; t.srcdoc=t.dataset.doc; t.classList.add('active');
+
+  /* ── i18n — KO/EN 전환. 병기된 라벨은 사전에 넣지 않는다 (한글 단독 텍스트만) ── */
+  var SS_LANG = (function(){ try { return localStorage.getItem('ss-lang') || 'ko'; } catch(e){ return 'ko'; } })();
+  var SS_DICT = {
+    /* 열람실 (worker chamber) */
+    "7개 항목이 모두 체크되어야 열람실의 \"이상 없음\" 버튼이 활성화된다. 한 항목이라도 \"이상\" 상태면 자동으로 \"이상 발견\" 플로우로 전환된다.":
+      "The \"No Anomaly\" button activates only when all 7 items are checked. If any item reads \"anomalous\", the flow switches automatically to \"Report Anomaly\".",
+    "7개 항목 모두 확인해야 \"이상 없음\" 제출 가능": "All 7 items must be confirmed to submit \"No Anomaly\"",
+    "모든 매개가 종료되었습니다 · 통제 조치가 환경에 반영됨": "All mediation complete · control measures applied to the environment",
+    "체험자는 이 사건에 대해 위험을 보고할 수 있습니다.": "You may report a hazard for this event.",
+    "보고가 없어 단일 출처로 분류되었습니다.": "No report was made — classified as a single source.",
+    "단일 출처 경보로 처리됨": "Handled as a single-source alert",
+    "7개 항목 모두 확인 후 정상 기록": "Record as normal after confirming all 7 items",
+    "사진·음성으로 신고 · 감리자 즉시 통지": "Report by photo·voice · supervisor notified at once",
+    "열람실 · 두 개의 큰 선택지만 존재 · 학습 비용 거의 0 ·": "Reading Room · Only two big choices · Near-zero learning cost ·",
+    "상단 뱃지를 클릭해 체크리스트 확인": "Click the badge above to view the checklist",
+    "\"이상 없음\" 버튼 비활성화 상태": "\"No Anomaly\" button disabled",
+    "체크리스트 확인 완료": "Checklist confirmed",
+    "작업 전 체크리스트": "Pre-work Checklist",
+    "동측 1구역 작업 전 점검": "Pre-work inspection · East Sector 1",
+    "작업 전 점검": "Pre-work inspection",
+    "오늘의 작업": "Today's Task",
+    "안전모 착용": "Hard hat worn",
+    "본인 및 작업 중 모든 인원": "Yourself and everyone at work",
+    "장비 점검": "Equipment check",
+    "절단기·전동공구·발판 외관 이상 여부": "Visual condition of cutters, power tools, scaffolding",
+    "작업 구역 확인": "Work zone check",
+    "동측 1구역 진입로·동선 확보": "Access routes and pathways secured, East Sector 1",
+    "통신 상태": "Communication status",
+    "무전기 / 호출 응답 확인": "Radio / call response check",
+    "동료 위치 확인": "Coworker positions",
+    "같은 구역 내 인원 위치 파악": "Locations of everyone in the sector",
+    "진동 점검": "Vibration check",
+    "인접 공사·장비 진동 영향 여부": "Vibration impact from adjacent work and equipment",
+    "경계 표지 확인": "Boundary signage check",
+    "출입제한·낙하구역 표지 정상": "Restricted-access and drop-zone signs in place",
+    "진동 이상 감지": "Vibration anomaly detected",
+    "이상 없음": "No Anomaly",
+    "이상 발견": "Report Anomaly",
+    "진행률": "Progress",
+    "체크리스트": "Checklist",
+    "데모 안내 · 시스템 밖": "Demo Guide · Outside the System",
+    "작업자 화면 — 자기 캡슐 안": "Worker Screen — Inside One's Own Capsule",
+    "작업자 W·03": "Worker W·03",
+    "동측 1구역": "East Sector 1",
+    "타이틀로 돌아가기": "Return to Title",
+    "타이틀": "Title",
+    "닫기": "Close",
+    "열람실": "Reading Room",
+    "탭": "TAP",
+
+    /* 타이틀 (title) */
+    "건설 안전 AI 가상공간 — 도서관 시스템을 차용한 멀티에이전트 구조": "Construction Safety AI Virtual Space — A Multi-Agent Structure Borrowing the Library System",
+    "목록실 — 에이전트 조율": "Cataloguing Room — Agent Orchestration",
+    "서고 — 원본 보존": "Stacks — Raw Evidence Archive",
+    "목록실 입장": "Enter the Cataloguing Room",
+    "서고 입장": "Enter the Stacks",
+    "관장실": "Director's Office",
+    "참고사서 데스크": "Reference Desk",
+    "공용 검토대": "Shared Review Bench",
+    "현장 입력": "Site Input",
+
+    /* 참고사서 데스크 (supervisor) */
+    "감리자 화면 — 참고사서 데스크": "Supervisor Screen — Reference Librarian's Desk",
+    "감리자 / 전체 구역": "Supervisor / All Sectors",
+    "오늘의 검토 · 동측 현장": "Today's Review · East Site",
+    "위험도 순 · 고위험 미확인 상단": "Sorted by risk · unconfirmed high-risk first",
+    "감리자는 이 사건을 검토하고 상신할 수 있습니다.": "You may review this case and escalate it.",
+    "교차검증 불일치 — 작업자 보고와 센서 기록의 어긋남": "Cross-validation mismatch — worker report and sensor record disagree",
+    "교차검증 구조 — 출처 대조": "Cross-validation structure — source comparison",
+    "출처 간 불일치 — 사람이 느낀 신호를 센서가 잡지 못함": "Mismatch between sources — the sensor missed what a person felt",
+    "불일치가 관장실로 전달되었습니다 · 감리자의 검토가 기록됨": "The mismatch was delivered to the Director's Office · your review is recorded",
+    "진동 이상 감지 · 사진·음성 보고": "Vibration anomaly detected · photo·voice report",
+    "정상 범위 · 0.8 mm/s": "Normal range · 0.8 mm/s",
+    "사진 1 · 음성 0:12": "Photo 1 · Voice 0:12",
+    "진동 로그 14:20–14:35": "Vibration log 14:20–14:35",
+    "증거 · 작업자": "Evidence · Worker",
+    "증거 · 센서": "Evidence · Sensor",
+    "C · 진동 센서": "C · Vibration sensor",
+    "검토 상신 완료": "Review escalated",
+    "검토 중": "Reviewing",
+    "검토 콘솔": "Review console",
+    "관장실로 상신": "Escalate to Director's Office",
+    "작업자 재확인 요청": "Request worker reconfirmation",
+    "기각 · 정상 처리": "Dismiss · treat as normal",
+    "서측 2구역": "West Sector 2",
+    "남측 3구역": "South Sector 3",
+    "동측 2구역": "East Sector 2",
+    "북측 1구역": "North Sector 1",
+    "단일 출처": "Single source",
+    "불일치": "Mismatch",
+    "일치": "Match",
+    "정상": "Normal",
+    "높음": "High",
+    "낮음": "Low",
+    "시각": "Time",
+    "구역": "Sector",
+    "출처": "Source",
+    "상태": "Status",
+    "위험도": "Risk",
+    "교차검증": "Cross-validation",
+
+    /* 관장실 (director) */
+    "관장실 — 최종 판정": "Director's Office — Final Decision",
+    "소장 / 전체 현장": "Director / Whole Site",
+    "상신된 사건": "Escalated case",
+    "감리자가 상신한 불일치 — 작업자 재확인으로 보강됨. 관장실은 전 층위를 봅니다.": "The mismatch escalated by the supervisor — reinforced by worker reconfirmation. The Director's Office sees every layer.",
+    "소장은 작업 중지 · 조건부 속행 · 반려를 판정하며, 판정은 모든 층위로 하달됩니다.": "The director decides stop / conditional continuation / return, and the decision is issued to every layer.",
+    "작업자 재확인 — 진동 재발생, 불일치 유지 · 상신": "Worker reconfirmed — vibration recurred, mismatch upheld · escalated",
+    "감리자 권고 — 작업 중지 검토": "Supervisor recommendation — consider stopping work",
+    "동측 1구역 작업 중지 · 전 층위에 하달되고 기록됨": "Work stopped in East Sector 1 · issued to every layer and recorded",
+    "작업 중지 — 전 구역 하달 (14:33)": "Work stopped — issued to all sectors (14:33)",
+    "작업 중지 명령": "Work Stop Order",
+    "작업 중지 판정": "Work-stop ruling",
+    "작업 중지": "Stop Work",
+    "조건부 속행": "Conditional Continuation",
+    "감리자에게 반려": "Return to Supervisor",
+    "중지 하달됨": "Stop issued",
+    "판정 완료": "Decision made",
+    "판정 중": "Deciding",
+    "전체 출처 가시 · 소장 권한": "All sources visible · director's authority",
+    "감리·검증·현장": "Review · Validation · Site",
+    "V0.1 · 최종 판정 · 전 층위 하달": "V0.1 · Final decision · issued to all layers",
+    "상신 · ": "Escalated · ",
+    "B · 감리자": "B · Supervisor",
+    "Director Office · 관장실": "Director Office",
+
+    /* 목록실 (catalog) */
+    "열람 / 에이전트 전체": "Read-only / All agents",
+    "조율 · 추적 가능": "Orchestrated · Traceable",
+    "조율 로그 · 동측 1구역 14:28": "Orchestration log · East Sector 1 14:28",
+    "5 단계 · 자동 재생": "5 steps · auto replay",
+    "A · 작업자 입력 수신 → 목록 분류": "A · Worker input received → catalogued",
+    "C · 센서 로그 대조 요청": "C · Sensor log comparison requested",
+    "B · 감리자로 라우팅": "B · Routed to supervisor",
+    "조율 완료 · 관장실로 상신됨": "Orchestration complete · escalated to the Director's Office",
+    "조율 진행 중…": "Orchestrating…",
+    "조율 재생": "Replay orchestration",
+    "에이전트들이 이 사건을 어떻게 조율·라우팅했는지 단계별로 보입니다.": "Shows, step by step, how the agents orchestrated and routed this case.",
+    "어떤 입력이 · 어디로 · 왜 갔는지 — 모든 경로가 기록되고 열람됩니다.": "Which input went where, and why — every route is recorded and readable.",
+    "관장실 상신": "To Director",
+    "입력 → 상신": "Input → Escalation",
+    "작업자 입력": "Worker input",
+    "조율 · 목록": "Orchestration · Catalogue",
+    "B · 감리": "B · Review",
+    "C · 센서": "C · Sensor",
+    "Orchestration · 목록실": "Orchestration · Cataloguing Room",
+    "V0.1 · 조율 · 투명성": "V0.1 · Orchestration · Transparency",
+
+    /* 서고 (stacks) */
+    "열람 / 전체 기록": "Read-only / All records",
+    "보존 · 검색 가능": "Preserved · Searchable",
+    "사건 기록 · 동측 1구역 14:28": "Case records · East Sector 1 14:28",
+    "5건 · 모두 보존됨": "5 records · all preserved",
+    "기록을 선택하면 서고에서의 위치가 밝아집니다 — 열람 전용": "Select a record and its location lights up in the stacks — read-only",
+    "진동 이상 보고 · 사진 1 · 음성 0:12": "Vibration anomaly report · Photo 1 · Voice 0:12",
+    "진동 로그 0.8 mm/s": "Vibration log 0.8 mm/s",
+    "출처 간 불일치 판정": "Ruled a mismatch between sources",
+    "출처 간 불일치": "Mismatch between sources",
+    "재확인 · 불일치 유지 · 상신": "Reconfirmed · mismatch upheld · escalated",
+    "이 사건의 모든 원본 기록이 여기 보존되어 있습니다.": "Every original record of this case is preserved here.",
+    "기록은 지워지지 않습니다 · 모든 입력은 영구 보존되고 검색됩니다.": "Records are never erased · every input is preserved forever and searchable.",
+    "보존됨": "Preserved",
+    "A · 작업자": "A · Worker",
+    "— · 소장": "— · Director",
+    "Archive · 서고": "Archive · Stacks",
+    "V0.1 · 원본 보존 · 책임성": "V0.1 · Originals preserved · Accountability"
+  };
+  function SS_I18N_BOOT(D){
+    var KEYS = Object.keys(D).sort(function(a,b){ return b.length - a.length; });
+    var RX = KEYS.map(function(k){
+      var esc = k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+');
+      return [new RegExp(esc, 'g'), D[k]];
+    });
+    function tr(t){ for(var i=0;i<RX.length;i++){ RX[i][0].lastIndex=0; t=t.replace(RX[i][0], RX[i][1]); } return t; }
+    var saved = new WeakMap();
+    function walk(root, toEn){
+      var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: function(n){
+        var p = n.parentElement;
+        return (p && (p.tagName==='SCRIPT' || p.tagName==='STYLE')) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT; } });
+      var n;
+      while(n = w.nextNode()){
+        if(toEn){ if(/[가-힣]/.test(n.textContent)){ if(!saved.has(n)) saved.set(n, n.textContent);
+          var t = tr(n.textContent); if(t !== n.textContent) n.textContent = t; } }
+        else { if(saved.has(n)) n.textContent = saved.get(n); }
+      }
+      if(root.querySelectorAll){ root.querySelectorAll('[title],[aria-label]').forEach(function(e){
+        ['title','aria-label'].forEach(function(a){ var v = e.getAttribute(a); if(!v) return;
+          if(toEn && /[가-힣]/.test(v)){ e.setAttribute('data-ssko-'+a, v); e.setAttribute(a, tr(v)); }
+          else if(!toEn && e.hasAttribute('data-ssko-'+a)){ e.setAttribute(a, e.getAttribute('data-ssko-'+a)); } }); }); }
+    }
+    var mo = null;
+    function setLang(l){
+      window.__ssLang = l;
+      if(l === 'en'){
+        walk(document.body, true);
+        if(!mo){
+          mo = new MutationObserver(function(ms){ if(window.__ssLang !== 'en') return; ms.forEach(function(m){
+            if(m.type === 'characterData'){ var n = m.target; if(/[가-힣]/.test(n.textContent)){
+              saved.set(n, n.textContent); var t = tr(n.textContent); if(t !== n.textContent) n.textContent = t; } }
+            if(m.addedNodes) m.addedNodes.forEach(function(a){
+              if(a.nodeType === 3){ if(/[가-힣]/.test(a.textContent)){ saved.set(a, a.textContent); a.textContent = tr(a.textContent); } }
+              else if(a.nodeType === 1){ walk(a, true); } }); }); });
+          mo.observe(document.body, { subtree:true, childList:true, characterData:true });
+        }
+      } else { walk(document.body, false); }
+    }
+    window.addEventListener('message', function(e){ if(e.data && e.data.ssLang) setLang(e.data.ssLang); });
+    var pl = 'ko'; try { pl = window.parent.SS_LANG || 'ko'; } catch(e){}
+    if(pl === 'en') setLang('en'); else window.__ssLang = 'ko';
+  }
+  /* 방별 추가 사전 — 타이틀의 병기 버튼(목록실/CATALOGUE 등)과 충돌하는 단독 키는 해당 방에만 주입 */
+  var SS_EXTRA = {
+    catalog: { "목록실 안": "Inside the Catalogue", "목록실": "Cataloguing Room", "입력": "Input" },
+    stacks:  { "서고": "Stacks" }
+  };
+  function ssSnippet(which){
+    var d = {};
+    Object.keys(SS_DICT).forEach(function(k){ d[k] = SS_DICT[k]; });
+    var ex = SS_EXTRA[which]; if(ex) Object.keys(ex).forEach(function(k){ d[k] = ex[k]; });
+    return '<scr'+'ipt>(' + SS_I18N_BOOT.toString() + ')(' + JSON.stringify(d) + ')</scr'+'ipt>';
+  }
+
+  function show(which){ var t=frames[which]; if(!t) return; t.srcdoc=t.dataset.doc+ssSnippet(which); t.classList.add('active');
     Object.keys(frames).forEach(function(k){ if(k!==which){ var f=frames[k]; f.classList.remove('active'); setTimeout(function(){ f.removeAttribute('srcdoc'); },700);} }); }
   window.addEventListener('message', function(e){
     if(e.data==='nav:worker')show('worker'); else if(e.data==='nav:supervisor')show('supervisor');
     else if(e.data==='nav:director')show('director'); else if(e.data==='nav:stacks')show('stacks');
     else if(e.data==='nav:catalog')show('catalog'); else if(e.data==='nav:title')show('title'); });
-  frames.title.srcdoc=frames.title.dataset.doc;
+  frames.title.srcdoc=frames.title.dataset.doc+ssSnippet('title');
+
+  var ssBtn = document.getElementById('ss-lang');
+  function ssRender(){ ssBtn.innerHTML = SS_LANG==='ko'
+    ? '<span style="color:#E8E6DD">KO</span> · EN' : 'KO · <span style="color:#E8E6DD">EN</span>'; }
+  ssBtn.onclick = function(){ SS_LANG = SS_LANG==='ko' ? 'en' : 'ko';
+    try { localStorage.setItem('ss-lang', SS_LANG); } catch(e){}
+    ssRender();
+    Object.keys(frames).forEach(function(k){ var f=frames[k];
+      if(f.contentWindow){ try{ f.contentWindow.postMessage({ssLang:SS_LANG},'*'); }catch(e){} } }); };
+  ssRender();
 </script></body></html>
