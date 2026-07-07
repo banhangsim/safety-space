@@ -19,7 +19,6 @@ The process surfaced a collision between space for AI agents — which need neit
 ## Live demo
 
 - **GitHub Pages:** https://banhangsim.github.io/safety-space/
-- **Vercel:** https://yangwook-final-0616.vercel.app
 
 Recommended: desktop browser (Chrome / Safari). A single self-contained HTML file with no dependency other than Three.js (CDN).
 

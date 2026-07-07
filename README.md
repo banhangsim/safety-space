@@ -25,7 +25,6 @@
 ## 라이브 데모
 
 - **GitHub Pages:** https://banhangsim.github.io/safety-space/
-- **Vercel:** https://yangwook-final-0616.vercel.app
 
 권장 환경: 데스크톱 브라우저 (Chrome / Safari). 단일 HTML 파일이며 Three.js(CDN) 외 의존성이 없다.
 
