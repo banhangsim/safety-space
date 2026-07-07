@@ -93,6 +93,6 @@ Deployed the final build to Vercel on 2026-06-16.
 
 ## Unresolved
 
-- **System-as-space vs. Designed space** — the open question, to be addressed in the dissertation
+- **System-as-space vs. Designed space** — the open question
 - **Return Desk (Site Control Output Layer)** — not built as an independent room
 - Further refinement of transitions between rooms and viewpoint consistency
