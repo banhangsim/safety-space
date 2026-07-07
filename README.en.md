@@ -44,17 +44,19 @@ The purpose of this space is to come to know, bodily, *what is visible and what 
 | Stacks (서고) | Raw Evidence Archive | Built |
 | Return Desk (반납대) | Site Control Output Layer | **Not built (open question)** |
 
-Details: [docs/02-rooms.md](docs/02-rooms.md) *(Korean)*
+Details: [docs/02-rooms.en.md](docs/02-rooms.en.md)
 
-## Documents *(Korean)*
+## Documents
 
-- [01 — Thesis and theoretical grounding](docs/01-thesis.md)
-- [02 — The six rooms](docs/02-rooms.md)
-- [03 — Design log](docs/03-design-log.md)
+- [01 — Thesis and theoretical grounding](docs/01-thesis.en.md)
+- [02 — The six rooms](docs/02-rooms.en.md)
+- [03 — Design log](docs/03-design-log.en.md)
 
 ## Research context
 
-As the symmetrical counterpart to the doctoral inquiry *"Do extraordinary urban spaces create social connection?"*, this project asks: *"How does an extraordinary digital space borrow everyday spatial grammar to create trust?"* If "who sees whom" is the grammar of community in physical space, in this system it is the grammar of safety.
+This project explores *"how an extraordinary digital space borrows everyday spatial grammar to create trust."* If "who sees whom" is the grammar of community in physical space, in this system it is the grammar of safety.
+
+It is also the first prototype toward **Banhangsim Design Studio's spatial-design multi-agent system** — a starting point for extending the methodology of spatial design into agent systems.
 
 ## Tech
 
